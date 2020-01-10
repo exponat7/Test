@@ -1,0 +1,16 @@
+﻿@*
+    Частичное представление отображения раздела обработки текущего запроса
+*@
+@{ 
+    int? reqId = ViewBag.AssignedId;
+    string message = "Привет";
+    if(reqId.HasValue)
+    {
+        message = $"Вы выполняете запрос № {reqId.Value}";
+    }
+}
+<div class="processing">
+    <div style="display:flex;justify-content:center;">
+        <div style="display:flex;" id="IncomingContentId">@message</div>
+    </div>
+</div>

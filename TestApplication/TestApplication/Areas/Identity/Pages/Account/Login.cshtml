@@ -1,0 +1,55 @@
+﻿@page
+@model LoginModel
+
+@{
+    ViewData["Title"] = "Вход";
+     int? type = (int?)ViewData["type"];
+    string message = (string)ViewData["message"];
+}
+
+<div class="main-login">
+    <div class="second-line">
+        <div class="card">
+            <h1>@ViewData["Title"]</h1>
+            <section>
+                <form id="account" method="post">
+                    <hr />
+                    <div class="simple-element">
+                        <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                    </div>
+                    <div class="simple-element">
+                        <label asp-for="Input.Email"></label>
+                        <input asp-for="Input.Email" />
+                        <span asp-validation-for="Input.Email" class="text-danger"></span>
+                    </div>
+                    <div class="simple-element">
+                        <label asp-for="Input.Password"></label>
+                        <input asp-for="Input.Password" />
+                        <span asp-validation-for="Input.Password" class="text-danger"></span>
+                    </div>
+                    <div class="simple-element">
+                        <div>
+                            <label asp-for="Input.RememberMe">
+                                <input asp-for="Input.RememberMe" />
+                                @Html.DisplayNameFor(m => m.Input.RememberMe)
+                            </label>
+                        </div>
+                    </div>
+                    <div class="simple-element">
+                        <div class="pre-button"><button type="submit">Войти</button></div>
+                    </div>
+                </form>
+            </section>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+<script>
+    let type = '@type';
+    if (type) {
+        Notify.generate('@message', '', +type, 8000);
+    }
+</script>
+}

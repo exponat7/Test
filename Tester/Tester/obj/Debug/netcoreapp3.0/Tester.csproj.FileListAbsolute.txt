@@ -1,0 +1,13 @@
+D:\Projects\C#\Tester\Tester\bin\Debug\netcoreapp3.0\Tester.exe
+D:\Projects\C#\Tester\Tester\bin\Debug\netcoreapp3.0\Tester.deps.json
+D:\Projects\C#\Tester\Tester\bin\Debug\netcoreapp3.0\Tester.runtimeconfig.json
+D:\Projects\C#\Tester\Tester\bin\Debug\netcoreapp3.0\Tester.runtimeconfig.dev.json
+D:\Projects\C#\Tester\Tester\bin\Debug\netcoreapp3.0\Tester.dll
+D:\Projects\C#\Tester\Tester\bin\Debug\netcoreapp3.0\Tester.pdb
+D:\Projects\C#\Tester\Tester\obj\Debug\netcoreapp3.0\Tester.csprojAssemblyReference.cache
+D:\Projects\C#\Tester\Tester\obj\Debug\netcoreapp3.0\Tester.AssemblyInfoInputs.cache
+D:\Projects\C#\Tester\Tester\obj\Debug\netcoreapp3.0\Tester.AssemblyInfo.cs
+D:\Projects\C#\Tester\Tester\obj\Debug\netcoreapp3.0\Tester.dll
+D:\Projects\C#\Tester\Tester\obj\Debug\netcoreapp3.0\Tester.pdb
+D:\Projects\C#\Tester\Tester\bin\Debug\netcoreapp3.0\Newtonsoft.Json.dll
+D:\Projects\C#\Tester\Tester\obj\Debug\netcoreapp3.0\Tester.csproj.CopyComplete

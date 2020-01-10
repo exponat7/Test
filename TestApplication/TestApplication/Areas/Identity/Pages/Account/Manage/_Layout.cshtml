@@ -1,0 +1,22 @@
+﻿@{
+    Layout = "/Views/Shared/_Layout.cshtml";
+}
+
+<div style="display:flex;flex-direction:column;">
+    <div>
+        <h2>Изменение настроек аккаунта</h2>
+        <hr />
+    </div>
+    <div>
+        <div>
+            <partial name="_ManageNav" />
+        </div>
+        <div class="main-login">
+            @RenderBody()
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @RenderSection("Scripts", required: false)
+}

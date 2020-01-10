@@ -1,0 +1,33 @@
+﻿@*
+    Частичное представление отображения раздела таб-закладок
+*@
+@using TestApplication.Areas.Identity.Managers;
+@using TestApplication.Areas.Identity.Models;
+@using TestApplication.Models.ViewModels;
+
+@inject CustomUserManager<CustomIdentityUser> CustomUserManager
+
+@model TabModel
+
+@{
+    bool isManager = await CustomUserManager.IsInRoleAsync(User, "manager");
+    bool isDirector = await CustomUserManager.IsInRoleAsync(User, "director");
+}
+
+<div class="tab-container">
+    <div style="display:flex;">
+        <div id="IncomongTabId" class="tab-ctrl selected-tab" onclick="clickTab(this.id,0);">Входящие</div>
+        @if (isDirector || isManager)
+        {
+            <div id="UsersTabId" class="tab-ctrl" onclick="clickTab(this.id,1);">Пользователи</div>
+        }
+        @if (isManager)
+        {
+            <div id="AdminTabId" class="tab-ctrl" onclick="clickTab(this.id,2);">Администрирование</div>
+        }
+    </div>
+    <div id="TabContentId" class="tab-content">
+        @*К любому табу можно прикрутить SignalR и сделать динамическое обновление информации, но это точно не в тестовом задании*@
+        @{await Html.RenderPartialAsync("_IncomingTabView", Model.Requests);}
+    </div>
+</div>

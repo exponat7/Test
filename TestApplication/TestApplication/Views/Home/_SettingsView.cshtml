@@ -1,0 +1,42 @@
+﻿@*
+    Частичное представление для отображения настроек
+*@
+@using TestApplication.Models.ViewModels
+@model SettingsModel
+
+<div>
+    <div style="display:flex;flex-direction:column;">
+        <div>Настройки</div>
+        <hr style="margin-top:20px;" />
+    </div>
+    @using (Html.BeginForm("SaveSettings", "Home", FormMethod.Post, new { id = "SettingsFormId" }))
+    {
+<div>
+    <div>@Html.ValidationSummary(true)</div>
+    <div style="display:flex;flex-direction:column;margin-top:10px;">
+        @Html.LabelFor(m => m.Tm)
+        @Html.TextBoxFor(m => m.Tm, htmlAttributes: new { type = "number", data_val = "true", data_val_maxlessmin1="Td не должно быть меньше Tm" })
+        @Html.ValidationMessageFor(m => m.Tm, "", htmlAttributes: new { @class = "text-danger" })
+    </div>
+    <div style="display:flex;flex-direction:column;margin-top:10px;">
+        @Html.LabelFor(m => m.Td)
+        @Html.TextBoxFor(m => m.Td, htmlAttributes: new { type = "number", data_val = "true", data_val_maxlessmin1="Td не должно быть меньше Tm" })
+        @Html.ValidationMessageFor(m => m.Td, "", htmlAttributes: new { @class = "text-danger" })
+    </div>
+    <div style="display:flex;flex-direction:column;margin-top:10px;">
+        @Html.LabelFor(m => m.From)
+        @Html.TextBoxFor(m => m.From, htmlAttributes: new { type = "number", data_val = "true", data_val_maxlessmin2="To не должно быть меньше From" })
+        @Html.ValidationMessageFor(m => m.From, "", htmlAttributes: new { @class = "text-danger" })
+    </div>
+    <div style="display:flex;flex-direction:column;margin-top:10px;">
+        @Html.LabelFor(m => m.To)
+        @Html.TextBoxFor(m => m.To, htmlAttributes: new { type = "number", data_val = "true", data_val_maxlessmin2="To не должно быть меньше From" })
+        @Html.ValidationMessageFor(m => m.To, "", htmlAttributes: new { @class = "text-danger" })
+    </div>
+    <div style="display:flex;margin-top:20px;justify-content:flex-end;">
+        <button type="button" onclick="saveSettingsDialog();">Сохранить</button>
+        <button type="reset" onclick="closeSettingsDialog();" style="margin-left:10px;">Отмена</button>
+    </div>
+</div>
+    }
+</div>

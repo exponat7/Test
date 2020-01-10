@@ -1,0 +1,217 @@
+﻿@using TestApplication.Areas.Identity.Managers;
+@using TestApplication.Areas.Identity.Models;
+@using TestApplication.Models.ViewModels;
+@using TestApplication.Common;
+
+@inject CustomUserManager<CustomIdentityUser> CustomUserManager
+
+@model MainModel
+
+@{
+    ViewData["Title"] = "Обработка входящих запросов";
+    bool isManager = await CustomUserManager.IsInRoleAsync(User, "manager");
+    bool isDirector = await CustomUserManager.IsInRoleAsync(User, "director");
+}
+<div style="display:flex;flex-direction:column; width:100%;">
+    <div style="display:flex;flex-direction:column;">
+        <div style="display:flex;">
+            <div style="width:100%;font-size:14pt;font-weight:500;">@ViewData["Title"]</div>
+            <div style="display:flex;">
+                @if (isManager)
+                {
+                    <button type="button" onclick="openSettingsDialog();">Настройки</button>
+                }
+            </div>
+        </div>
+        <hr style="margin-top:20px;" />
+    </div>
+    <div style="display:flex;height:100%;margin-top:10px;">
+        <div style="display:flex;width:100%;height:100%;">
+            @{await Html.RenderPartialAsync("_TabsView", Model.StartTab);}
+        </div>
+        <div style="width:25%;height:100%;">
+            @{await Html.RenderPartialAsync("_ProcessingView");}
+        </div>
+    </div>
+</div>
+@if (isManager)
+{
+    <dialog id="settings_dialog">
+        @{await Html.RenderPartialAsync("_SettingsView", Model.Settings);}
+    </dialog>
+}
+@section Scripts
+    {
+    <script>
+         let hubUrl = 'incoming';
+
+        const hubConnection = new signalR.HubConnectionBuilder()
+            .withUrl(hubUrl)
+            .build();
+        //
+        hubConnection.on('Send', function (message) {
+            let result = JSON.parse(message);
+            $("#IncomingContentId").html(result.message);
+        });
+        //
+        hubConnection.on('UserUpdate', function (message) {
+            let result = JSON.parse(message);
+            if (result.id && $("#UsersTableId").length) {
+                //
+                let user_cell = $(`#${result.id}`);
+                if (user_cell.length) {
+                    let circle = user_cell.find(".app-circle");
+                    circle.removeClass("app-gray").removeClass("app-green").removeClass("app-gray");
+                    switch (result.state) {
+                        case 0:
+                            user_cell.find("label").text("Не в системе");
+                            circle.addClass("app-gray");
+                            break;
+                        case 1:
+                            user_cell.find("label").text("Свободен");
+                            circle.addClass("app-green");
+                            break;
+                        case 2:
+                            user_cell.find("label").text("Занят");
+                            circle.addClass("app-red");
+                            break;
+                    }
+                }
+                else {//Означает добавление пользователя перерисовываем всю таблицу
+                    clickTab("UsersTabId", 1);
+                }
+            }
+        });
+        //
+        hubConnection.start();
+        //
+        $(function () {
+            $("#settings_dialog").dialog({ width: "auto", autoOpen: false, modal: true, show: "blind", hide: "blind" });
+        });
+
+        function reinitValidation(form) {
+            form.removeData("validator");
+            form.removeData("unobtrusiveValidation");
+            $.validator.unobtrusive.parse(form);
+        }
+
+        //валидация
+        $.validator.addMethod('maxlessmin1',
+            function (value, element, params) {
+                let tm = $("#Tm").val();
+                let td = $("#Td").val();
+                return +td > +tm;
+            });
+
+        $.validator.addMethod('maxlessmin2',
+            function (value, element, params) {
+                let from = $("#From").val();
+                let to = $("#To").val();
+                return +to > +from;
+            });
+
+        $.validator.unobtrusive.adapters.add("maxlessmin1", function (options) {
+            setValidationValues(options, "maxlessmin1", true);
+        });
+
+        $.validator.unobtrusive.adapters.add("maxlessmin2", function (options) {
+            setValidationValues(options, "maxlessmin2", true);
+        });
+
+        function setValidationValues(options, ruleName, value) {
+            options.rules[ruleName] = value;
+            if (options.message) {
+                options.messages[ruleName] = options.message;
+            }
+        }
+
+        $.validator.unobtrusive.parse();
+
+        $(document).ready(init);
+
+        $(window).on('resize', init);
+
+        function init() {
+            let incoming = $("#IncomingTableBody");
+            if (incoming.length) {
+                incoming.height($("#IncomingTableId").height() - 100);
+            }
+            let users = $("#UsersTableBody");
+            if (users.length) {
+                users.height($("#UsersTableId").height() - 100);
+            }
+        }
+
+        function openSettingsDialog() {
+            //Перерисовываем диалог с актуальными настройками
+            let url = '@Url.Action("UpdateSettingsDialog", "Home")';
+            $.ajax({
+                type: "POST",
+                url: url,
+                data: "",
+                success: function (data) {
+                    let _dialog = $("#settings_dialog");
+                    _dialog.html(data);
+                    reinitValidation($("#SettingsFormId"));
+                    _dialog.dialog("open");
+                    return false;
+                },
+                error: function (data) {
+                    console.log(data);
+                },
+            });
+        }
+
+        function closeSettingsDialog() {
+            $("#settings_dialog").dialog("close");
+            return false;
+        }
+
+        function saveSettingsDialog() {
+            let form = $("#SettingsFormId");
+            form.validate();
+            if (!form.valid()) return;
+            $.ajax({
+                type: form.attr("method"),
+                url: form.attr("action"),
+                data: form.serialize(),
+                success: function (data) {
+                    if (data.success) {
+                        $("#settings_dialog").dialog("close");
+                    }
+                    else {
+                        $("#settings_dialog").html(data);
+                    }
+                },
+                error: function (data) {
+                    console.log(data);
+                },
+            });
+        }
+
+        function clickTab(id, number) {
+            $("#IncomongTabId").removeClass("selected-tab");
+            $("#UsersTabId").removeClass("selected-tab");
+            $("#AdminTabId").removeClass("selected-tab");
+            //
+            let url = '@Url.Action("SelectTab", "Home", new { Id = "--1"})';
+            $.ajax({
+                type: "POST",
+                url: url.replace("--1", number).replace(/&amp;/g, "&"),
+                data: "",
+                success: function (data) {
+                    $("#TabContentId").html(data);
+                    $(`#${id}`).addClass("selected-tab");
+                    init();
+                },
+                error: function (data) {
+                    console.log(data);
+                },
+            });
+        }
+
+        function pagingDemo() {
+            alert("Здесь могла быть ваша пагинация!")
+        }
+    </script>
+}
